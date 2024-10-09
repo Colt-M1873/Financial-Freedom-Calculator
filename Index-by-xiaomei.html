@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Formula Calculator and Plotter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.2/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 30vw; /* 30% of the viewport width */
+            display: inline-block; /* Display charts side by side */
+            vertical-align: top; /* Align charts to the top */
+            margin: 10px; /* Add some margin between charts */
+        }
+    </style>
+</head>
+<body>
+    <h1>Math Formula Calculator and Plotter</h1>
+    <input type="text" id="formula" placeholder="Enter math formula">
+    <input type="number" id="slope" placeholder="Enter slope a" value="5">
+    <input type="number" id="range" placeholder="Enter x-axis range n" value="100">
+    <p id="result"></p>
+    <div class="chart-container">
+        <canvas id="chart1" width="400" height="400"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="chart2" width="400" height="400"></canvas>
+    </div>
+
+    <script>
+        document.getElementById('formula').addEventListener('input', calculate);
+        document.getElementById('slope').addEventListener('input', plotLines);
+        document.getElementById('range').addEventListener('input', updateRange);
+
+        function calculate() {
+            const formula = document.getElementById('formula').value;
+            try {
+                const result = math.evaluate(formula);
+                document.getElementById('result').innerText = `Result: ${result}`;
+            } catch (error) {
+                document.getElementById('result').innerText = 'Error: Invalid formula';
+            }
+        }
+
+        const ctx1 = document.getElementById('chart1').getContext('2d');
+        const chart1 = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: [], // x values will be set dynamically
+                datasets: [
+                    {
+                        label: 'y = ax',
+                        data: [],
+                        borderColor: 'gray', // y = ax line color
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'z = 2ax',
+                        data: [],
+                        borderColor: 'black', // z = 2ax line color
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 100,
+                        grid: {
+                            color: 'black' // x-axis color
+                        },
+                        ticks: {
+                            color: 'black' // x-axis tick color
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'black' // y-axis color
+                        },
+                        ticks: {
+                            color: 'black' // y-axis tick color
+                        }
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('chart2').getContext('2d');
+        const chart2 = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: [], // x values will be set dynamically
+                datasets: [
+                    {
+                        label: 'k = ax^2',
+                        data: [],
+                        borderColor: 'gray', // k = ax^2 line color
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: 0,
+                        max: 100,
+                        grid: {
+                            color: 'black' // x-axis color
+                        },
+                        ticks: {
+                            color: 'black' // x-axis tick color
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'black' // y-axis color
+                        },
+                        ticks: {
+                            color: 'black' // y-axis tick color
+                        }
+                    }
+                }
+            }
+        });
+
+        function plotLines() {
+            const a = parseFloat(document.getElementById('slope').value) || 5; // default to 5 if a is not valid
+            const n = parseInt(document.getElementById('range').value, 10) || 100; // default to 100 if n is not valid
+            if (isNaN(a)) {
+                chart1.data.datasets[0].data = [];
+                chart1.data.datasets[1].data = [];
+                chart2.data.datasets[0].data = [];
+            } else {
+                chart1.data.datasets[0].data = Array.from({length: n + 1}, (_, i) => {
+                    return {x: i, y: a * i};
+                });
+                chart1.data.datasets[1].data = Array.from({length: n + 1}, (_, i) => {
+                    return {x: i, y: 2 * a * i};
+                });
+                chart2.data.datasets[0].data = Array.from({length: n + 1}, (_, i) => {
+                    return {x: i, y: a * i * i};
+                });
+            }
+            chart1.update();
+            chart2.update();
+        }
+
+        function updateRange() {
+            const n = parseInt(document.getElementById('range').value, 10) || 100; // default to 100 if n is not valid
+            if (!isNaN(n)) {
+                chart1.options.scales.x.max = n;
+                chart2.options.scales.x.max = n;
+                plotLines(); // Re-plot the lines with the new range
+            }
+        }
+
+        // Initial plot with default values
+        plotLines();
+    </script>
+</body>
+</html>
