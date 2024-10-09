@@ -3,45 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Formula Calculator and Plotter</title>
+    <title>Investment Return Calculator and Plotter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.2/math.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .chart-container {
-            width: 30vw; /* 30% of the viewport width */
-            display: inline-block; /* Display charts side by side */
-            vertical-align: top; /* Align charts to the top */
-            margin: 10px; /* Add some margin between charts */
+            width: 60vw; /* 60% of the viewport width */
+            margin: auto;
+        }
+        .charts-wrapper {
+            text-align: center; /* Center the chart containers */
+        }
+        .input-container {
+            margin: 10px 0;
+        }
+        input[type="number"] {
+            border: none;
+            border-bottom: 1px solid black;
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+            font-size: 1em;
+            padding: 5px;
+            width: 50%;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-bottom: 2px solid black;
+        }
+        label {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        .result-container {
+            margin: 20px 0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1em;
+        }
+        /* 适用于屏幕宽度大于等于 768 像素的设备（通常是平板和桌面设备） */
+        @media (min-width: 768px) {
+            .container {
+                width: 50%;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Math Formula Calculator and Plotter</h1>
-    <input type="text" id="formula" placeholder="Enter math formula">
-    <input type="number" id="slope" placeholder="Enter slope a" value="5">
-    <input type="number" id="range" placeholder="Enter x-axis range n" value="100">
-    <p id="result"></p>
-    <div class="chart-container">
-        <canvas id="chart1" width="400" height="400"></canvas>
+    <h1>Investment Return Calculator and Plotter</h1>
+    <div class="input-container">
+        <label for="investment">Annual Investment (x):</label>
+        <input type="number" id="investment" placeholder="Enter annual investment x" value="8">
     </div>
-    <div class="chart-container">
-        <canvas id="chart2" width="400" height="400"></canvas>
+    <div class="input-container">
+        <label for="rate">Return Rate (y) %:</label>
+        <input type="number" id="rate" placeholder="Enter return rate y (%)" value="7">
+    </div>
+    <div class="input-container">
+        <label for="years">Number of Years (n):</label>
+        <input type="number" id="years" placeholder="Enter number of years n" value="10">
+    </div>
+    <div class="result-container">
+        <p id="result">Estimated year (m) when annual net return equals annual investment: <span id="year-m"></span></p>
+    </div>
+    <div class="charts-wrapper">
+        <div class="chart-container">
+            <canvas id="chart1" width="400" height="400"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="chart2" width="400" height="400"></canvas>
+        </div>
     </div>
 
     <script>
-        document.getElementById('formula').addEventListener('input', calculate);
-        document.getElementById('slope').addEventListener('input', plotLines);
-        document.getElementById('range').addEventListener('input', updateRange);
-
-        function calculate() {
-            const formula = document.getElementById('formula').value;
-            try {
-                const result = math.evaluate(formula);
-                document.getElementById('result').innerText = `Result: ${result}`;
-            } catch (error) {
-                document.getElementById('result').innerText = 'Error: Invalid formula';
-            }
-        }
+        document.getElementById('investment').addEventListener('input', plotInvestmentReturns);
+        document.getElementById('rate').addEventListener('input', plotInvestmentReturns);
+        document.getElementById('years').addEventListener('input', plotInvestmentReturns);
 
         const ctx1 = document.getElementById('chart1').getContext('2d');
         const chart1 = new Chart(ctx1, {
@@ -50,16 +86,16 @@
                 labels: [], // x values will be set dynamically
                 datasets: [
                     {
-                        label: 'y = ax',
+                        label: 'Total Returns (s)',
                         data: [],
-                        borderColor: 'gray', // y = ax line color
+                        borderColor: 'black', // Total returns line color
                         borderWidth: 2,
                         fill: false
                     },
                     {
-                        label: 'z = 2ax',
+                        label: 'Total Investment (z)',
                         data: [],
-                        borderColor: 'black', // z = 2ax line color
+                        borderColor: 'gray', // Total investment line color
                         borderWidth: 2,
                         fill: false
                     }
@@ -71,7 +107,7 @@
                         type: 'linear',
                         position: 'bottom',
                         min: 0,
-                        max: 100,
+                        max: 10,
                         grid: {
                             color: 'black' // x-axis color
                         },
@@ -98,9 +134,16 @@
                 labels: [], // x values will be set dynamically
                 datasets: [
                     {
-                        label: 'k = ax^2',
+                        label: 'Annual Net Returns',
                         data: [],
-                        borderColor: 'gray', // k = ax^2 line color
+                        borderColor: 'black', // Annual net returns line color
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Annual Investment',
+                        data: [],
+                        borderColor: 'gray', // Annual investment line color
                         borderWidth: 2,
                         fill: false
                     }
@@ -112,7 +155,7 @@
                         type: 'linear',
                         position: 'bottom',
                         min: 0,
-                        max: 100,
+                        max: 10,
                         grid: {
                             color: 'black' // x-axis color
                         },
@@ -132,39 +175,52 @@
             }
         });
 
-        function plotLines() {
-            const a = parseFloat(document.getElementById('slope').value) || 5; // default to 5 if a is not valid
-            const n = parseInt(document.getElementById('range').value, 10) || 100; // default to 100 if n is not valid
-            if (isNaN(a)) {
-                chart1.data.datasets[0].data = [];
-                chart1.data.datasets[1].data = [];
-                chart2.data.datasets[0].data = [];
-            } else {
-                chart1.data.datasets[0].data = Array.from({length: n + 1}, (_, i) => {
-                    return {x: i, y: a * i};
-                });
-                chart1.data.datasets[1].data = Array.from({length: n + 1}, (_, i) => {
-                    return {x: i, y: 2 * a * i};
-                });
-                chart2.data.datasets[0].data = Array.from({length: n + 1}, (_, i) => {
-                    return {x: i, y: a * i * i};
-                });
-            }
-            chart1.update();
-            chart2.update();
-        }
+        function plotInvestmentReturns() {
+            const x = parseFloat(document.getElementById('investment').value) || 8; // default to 8 if x is not valid
+            const y = parseFloat(document.getElementById('rate').value) / 100 || 0.07; // default to 7% if y is not valid
+            const n = parseInt(document.getElementById('years').value, 10) || 10; // default to 10 if n is not valid
 
-        function updateRange() {
-            const n = parseInt(document.getElementById('range').value, 10) || 100; // default to 100 if n is not valid
-            if (!isNaN(n)) {
-                chart1.options.scales.x.max = n;
-                chart2.options.scales.x.max = n;
-                plotLines(); // Re-plot the lines with the new range
+            const returns = [];
+            const investments = [];
+            const annualNetReturns = [];
+            const annualInvestments = [];
+            let yearM = null;
+
+            for (let i = 0; i <= n; i++) {
+                const totalReturn = x * ((Math.pow(1 + y, i) - 1) / y);
+                const totalInvestment = x * i;
+                returns.push({x: i, y: totalReturn});
+                investments.push({x: i, y: totalInvestment});
+                annualInvestments.push({x: i, y: x});
+                if (i > 0) {
+                    const previousReturn = x * ((Math.pow(1 + y, i - 1) - 1) / y);
+                    const annualNetReturn = totalReturn - previousReturn - x;
+                    annualNetReturns.push({x: i, y: annualNetReturn});
+                    if (annualNetReturn >= x && yearM === null) {
+                        yearM = i;
+                    }
+                } else {
+                    annualNetReturns.push({x: i, y: 0});
+                }
             }
+
+            chart1.data.labels = returns.map(point => point.x);
+            chart1.data.datasets[0].data = returns;
+            chart1.data.datasets[1].data = investments;
+            chart1.options.scales.x.max = n;
+            chart1.update();
+
+            chart2.data.labels = annualNetReturns.map(point => point.x);
+            chart2.data.datasets[0].data = annualNetReturns;
+            chart2.data.datasets[1].data = annualInvestments;
+            chart2.options.scales.x.max = n;
+            chart2.update();
+
+            document.getElementById('year-m').textContent = yearM !== null ? yearM : 'Not reached within the given years';
         }
 
         // Initial plot with default values
-        plotLines();
+        plotInvestmentReturns();
     </script>
 </body>
 </html>
