@@ -91,7 +91,7 @@
                 max-width: 90%;
             }
             .chart-container {
-                width: 42vw; /* 30% of the viewport width */
+                width: 42vw; /* 42% of the viewport width */
             }
         }
     </style>
@@ -162,18 +162,27 @@
                         data: [],
                         borderColor: 'black', // Total returns line color
                         borderWidth: 2,
-                        fill: false
+                        fill: true
                     },
                     {
                         label: 'Total Investment (z)',
                         data: [],
                         borderColor: 'gray', // Total investment line color
                         borderWidth: 2,
-                        fill: false
+                        fill: true
                     }
                 ]
             },
             options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '总收益和总投资',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         type: 'linear',
@@ -222,6 +231,15 @@
                 ]
             },
             options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '年度净收益和年度投资',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         type: 'linear',
@@ -250,7 +268,7 @@
         function plotInvestmentReturns() {
             const x = parseFloat(document.getElementById('investment').value) || 8; // default to 8 if x is not valid
             const y = parseFloat(document.getElementById('rate').value) / 100 || 0.07; // default to 7% if y is not valid
-            const n = parseInt(document.getElementById('years').value, 10) || 20; // default to 10 if n is not valid
+            const n = parseInt(document.getElementById('years').value, 10) || 20; // default to 20 if n is not valid
 
             const returns = [];
             const investments = [];
