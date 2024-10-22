@@ -1,4 +1,3 @@
-
 网站罗列不同标的的历史收益率，包括过去一年，三年，五年，十年列表，并标记出五年或者十年的平均年化
 标的包括：
 5年定期存款利率
@@ -41,6 +40,13 @@ The Investor’s Guide to Active Asset Allocation: Using Technical Analysis and 
 
 顶部展示财务自由的定义
 引用名言宇宙中最强大的力量是复利
+
+好像爱因斯坦的原文如下
+
+"Compound interest is the eighth wonder of the world. He who understands it, earns it. He who doesn't, pays it,"
+
+看爱因斯坦在哪里讲的这句话，找原著。
+
 初步的财务自由：每年被动收入等于生活成本
 
 
@@ -54,13 +60,14 @@ The Investor’s Guide to Active Asset Allocation: Using Technical Analysis and 
 
 
 输入：
+
 * 每年用于储蓄和投资的总金额xx钱：
 * 预期整体年回报率：
-输出：
+  输出：
 * n年
 * 两张图表：
-图1：累计总投入金额（灰线）和复利后的总金额（黑线），中间差额三角为利润，底部三角为成本
-图2：当年投入金额（灰线）和当年利息金额（黑线），利息达到投入为财务自由
+  图1：累计总投入金额（灰线）和复利后的总金额（黑线），中间差额三角为利润，底部三角为成本
+  图2：当年投入金额（灰线）和当年利息金额（黑线），利息达到投入为财务自由
 
 绘图横轴为2n
 
@@ -83,5 +90,4 @@ The Investor’s Guide to Active Asset Allocation: Using Technical Analysis and 
 世界就是一个巨大的老虎机，如果你连硬币都没有，何谈中奖呢
 
 对于大多数人而言无风险利率是银行活期利率（甚至不是五年定期利率），但对比多种品类，考虑本币贬值和通胀等因素后，实际上这个无风险利率是跟不上通胀的，在你看来真正的无风险利率应当是债券etf利率或者黄金利率，因为债券etf极度安全稳定且收益略高于银行定期；黄金不论回报率，其本身能抵抗本币贬值。
-
 
